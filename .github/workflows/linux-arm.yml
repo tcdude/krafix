@@ -60,7 +60,8 @@ jobs:
           # no secrets are present in the container state or logs.
           install: |
               apt-get update -y -q
-              apt-get install -y -q libasound2-dev libxinerama-dev libgl1-mesa-dev libxi-dev git
+              apt-get upgrade -y -q
+              apt-get install -y -q libasound2-dev libxinerama-dev libgl1-mesa-dev libxi-dev git build-essential
 
           # Produce a binary artifact and place it in the mounted volume
           run: |
@@ -83,7 +84,7 @@ jobs:
         # ${PWD}/artifacts on the host.
         run: |
           ls -al "${PWD}/artifacts"
-        
+
     #steps:
     #- uses: actions/checkout@v1
     #- name: Apt Update
