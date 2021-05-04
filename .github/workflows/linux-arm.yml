@@ -22,8 +22,8 @@ jobs:
         include:
           - arch: aarch64
             distro: stretch
-          #- arch: armv6
-          #  distro: jessie
+          - arch: armv6
+            distro: jessie
 
     steps:
       - uses: actions/checkout@v2.1.0
@@ -35,7 +35,7 @@ jobs:
           distro: ${{ matrix.distro }}
 
           # Not required, but speeds up builds
-          # githubToken: ${{ github.token }}
+          githubToken: ${{ github.token }}
 
           # Create an artifacts directory
           setup: |
@@ -47,7 +47,7 @@ jobs:
 
           # Pass some environment variables to the container
           env: | # YAML, but pipe character is necessary
-            artifact_name: git-${{ matrix.distro }}_${{ matrix.arch }}
+            artifact_name: krafix-linux-${{ matrix.arch }}
 
           # The shell to run commands with in the container
           shell: /bin/bash
@@ -59,15 +59,31 @@ jobs:
           # publicly in your project's package repository, so it is vital that
           # no secrets are present in the container state or logs.
           install: |
-              apt-get update -y
-              apt-get install -y libasound2-dev libxinerama-dev libgl1-mesa-dev libxi-dev git
+              apt-get update -y -q
+              apt-get install -y -q libasound2-dev libxinerama-dev libgl1-mesa-dev libxi-dev git
 
           # Produce a binary artifact and place it in the mounted volume
           run: |
-            echo "Test"
-            echo "Test"
+            echo "Get Submodules"
+            git submodule update --init --recursive
+            echo "Get Kinc"
+            git clone --recursive https://github.com/Kode/Kinc.git
+            echo "Get Node.js"
+            git clone https://github.com/Kode/nodejs_bin.git --depth 1
+            echo "Setup Node.js"
+            nodejs_bin/copysysbin.sh
+            echo "Compile"
+            nodejs_bin/node Kinc/make --compile
+            echo "Copying artifact"
+            cp build/Release/krafix "/artifacts/${artifact_name}"
 
 
+      - name: Show the artifact
+        # Items placed in /artifacts in the container will be in
+        # ${PWD}/artifacts on the host.
+        run: |
+          ls -al "${PWD}/artifacts"
+        
     #steps:
     #- uses: actions/checkout@v1
     #- name: Apt Update
