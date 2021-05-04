@@ -80,8 +80,10 @@ jobs:
 
       - name: Get krafix_bin
         run: git clone https://github.com/Kode/krafix_bin.git
-      - name: Copy binary
-        run: cp "${PWD}/artifacts/krafix-linux-armv6" krafix_bin/krafix-linux-armv6
+      - name: Copy armv6 binary
+        run: cp "${PWD}/artifacts/krafix-linux-armv6" krafix_bin/krafix-linux-armv6 || echo "armv6 not yet present..."
+      - name: Copy aarch64 binary
+        run: cp "${PWD}/artifacts/krafix-linux-aarch64" krafix_bin/krafix-linux-aarch64 || echo "aarch64 not yet present..."
       - name: Set name
         run: git config --global user.name "Robbot"
       - name: Set email
