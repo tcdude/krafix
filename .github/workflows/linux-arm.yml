@@ -20,8 +20,8 @@ jobs:
     strategy:
       matrix:
         include:
-          #- arch: aarch64
-          #  distro: stretch
+          - arch: aarch64
+            distro: stretch
           - arch: armv6
             distro: jessie
 
@@ -73,10 +73,6 @@ jobs:
             git clone https://github.com/Kode/nodejs_bin.git --depth 1
             echo "Setup Node.js"
             nodejs_bin/copysysbin.sh
-            ls -la nodejs_bin
-            uname -m
-            uname -a
-            echo "$OSTYPE"
             echo "Compile"
             nodejs_bin/node Kinc/make --compile  || nodejs_bin/node-linuxarm Kinc/make --compile
             echo "Copying artifact"
@@ -88,6 +84,7 @@ jobs:
         # ${PWD}/artifacts on the host.
         run: |
           ls -al "${PWD}/artifacts"
+          file "${PWD}/artifacts/krafix-linux-armv6"
 
     #steps:
     #- uses: actions/checkout@v1
