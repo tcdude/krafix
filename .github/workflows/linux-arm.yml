@@ -1,12 +1,12 @@
 name: Linux-ARM
 
-#on:
-#  push:
-#    branches:
-#    - master
-#  pull_request:
-#    branches:
-#    - master
+# on:
+#   push:
+#     branches:
+#     - master
+#   pull_request:
+#     branches:
+#     - master
 
 on: push
 
@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-18.04
     name: Build on ${{ matrix.distro }} ${{ matrix.arch }}
 
-    # Run steps on a matrix of 3 arch/distro combinations
+    # Run steps for armv6 and aarch64
     strategy:
       matrix:
         include:
@@ -78,13 +78,22 @@ jobs:
             echo "Copying artifact"
             cp build/Release/krafix "/artifacts/${artifact_name}"
 
-
-      - name: Show the artifact
-        # Items placed in /artifacts in the container will be in
-        # ${PWD}/artifacts on the host.
-        run: |
-          ls -al "${PWD}/artifacts"
-          file "${PWD}/artifacts/krafix-linux-armv6"
+      - name: Get krafix_bin
+        run: git clone https://github.com/Kode/krafix_bin.git
+      - name: Copy binary
+        run: cp "${PWD}/artifacts/krafix-linux-armv6" krafix_bin/krafix-linux-armv6
+      - name: Set name
+        run: git config --global user.name "Robbot"
+      - name: Set email
+        run: git config --global user.email "robbot2019@robdangero.us"
+      - name: Commit binary
+        run: git -C krafix_bin commit -a -m "Update Linux binary to $GITHUB_SHA."
+      - name: Tag binary
+        run: git -C krafix_bin tag linux_$GITHUB_SHA
+      - name: Push binary
+        run: git -C krafix_bin push https://Kode-Robbot:$ROBBOT_PASS@github.com/Kode/krafix_bin.git master --tags
+        env:
+          ROBBOT_PASS: ${{ secrets.ROBBOT_PASS }}
 
     #steps:
     #- uses: actions/checkout@v1
@@ -102,19 +111,3 @@ jobs:
     #  run: nodejs_bin/copysysbin.sh
     #- name: Compile
     #  run: nodejs_bin/node Kinc/make --compile
-    #- name: Get krafix_bin
-    #  run: git clone https://github.com/Kode/krafix_bin.git
-    #- name: Copy binary
-    #  run: cp build/Release/krafix krafix_bin/krafix-linux64
-    #- name: Set name
-    #  run: git config --global user.name "Robbot"
-    #- name: Set email
-    #  run: git config --global user.email "robbot2019@robdangero.us"
-    #- name: Commit binary
-    #  run: git -C krafix_bin commit -a -m "Update Linux binary to $GITHUB_SHA."
-    #- name: Tag binary
-    #  run: git -C krafix_bin tag linux_$GITHUB_SHA
-    #- name: Push binary
-    #  run: git -C krafix_bin push https://Kode-Robbot:$ROBBOT_PASS@github.com/Kode/krafix_bin.git master --tags
-    #  env:
-    #    ROBBOT_PASS: ${{ secrets.ROBBOT_PASS }}
