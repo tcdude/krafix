@@ -76,8 +76,9 @@ jobs:
             ls -la nodejs_bin
             uname -m
             uname -a
+            echo "$OSTYPE"
             echo "Compile"
-            nodejs_bin/node Kinc/make --compile
+            nodejs_bin/node Kinc/make --compile  || nodejs_bin/node-linuxarm Kinc/make --compile
             echo "Copying artifact"
             cp build/Release/krafix "/artifacts/${artifact_name}"
 
