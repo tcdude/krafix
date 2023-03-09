@@ -4,11 +4,12 @@ on:
   push:
     branches:
     - main
+    - linux-arm-fix
   pull_request:
     branches:
     - main
 
-concurrency: 
+concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
@@ -22,10 +23,10 @@ jobs:
       matrix:
         include:
           - arch: aarch64
-            distro: buster
+            distro: bullseye
             repo: "KincTools_linux_arm64"
           - arch: armv7
-            distro: buster
+            distro: bullseye
             repo: "KincTools_linux_arm"
 
     steps:
